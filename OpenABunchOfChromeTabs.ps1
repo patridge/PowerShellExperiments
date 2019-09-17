@@ -1,0 +1,18 @@
+# Given a bunch of GitHub repo URLs, open them all as Chrome tabs
+@("https://github.com/MicrosoftDocs/mslearn-display-relationships-in-xamarin-forms-with-master-detail-navigation",
+"https://github.com/MicrosoftDocs/mslearn-create-multi-page-xamarin-forms-apps-with-stack-and-tab-navigation",
+"https://github.com/MicrosoftDocs/mslearn-design-consistent-xaml-pages-with-shared-resources-and-styles",
+"https://github.com/MicrosoftDocs/mslearn-separate-your-ui-and-code-with-xamarin-forms-data-binding",
+"https://github.com/MicrosoftDocs/mslearn-display-collections-in-xamarin-forms-apps-with-listview",
+"https://github.com/MicrosoftDocs/mslearn-consume-rest-based-web-services-in-xamarin-apps",
+"https://github.com/MicrosoftDocs/mslearn-customize-layout-in-xamarin-forms-xaml-pages",
+"https://github.com/MicrosoftDocs/mslearn-create-custom-controls-with-forms-renderers",
+"https://github.com/MicrosoftDocs/mslearn-create-ui-in-xamarin-forms-apps-with-xaml",
+"https://github.com/MicrosoftDocs/mslearn-design-a-mvvm-viewmodel-for-xamarinforms",
+"https://github.com/MicrosoftDocs/mslearn-explore-cross-platform-design-patterns",
+"https://github.com/MicrosoftDocs/mslearn-create-a-mobile-app-with-xamarin-forms",
+"https://github.com/MicrosoftDocs/mslearn-customize-xamarin-forms-listview",
+"https://github.com/MicrosoftDocs/mslearn-introduction-to-xamarin-android",
+"https://github.com/MicrosoftDocs/mslearn-use-effects-in-xamarin-forms",
+"https://github.com/MicrosoftDocs/mslearn-store-local-data-with-sqlite",
+"https://github.com/MicrosoftDocs/mslearn-introduction-to-xamarin-ios") | % { Start-Process "chrome.exe" "$_" }
