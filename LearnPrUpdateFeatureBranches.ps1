@@ -1,10 +1,10 @@
 ## Given a bunch of branch names in the current repo, and a remote of `upstream`, pull the latest changes to upstream/master and merge them into each branch.
-@("branch-name-1",
-  "branch-name-2",
-  "branch-name-3",
-  "branch-name-4",
-  "branch-name-5",
-  "branch-name-6",
+@("branch-name-1", `
+  "branch-name-2", `
+  "branch-name-3", `
+  "branch-name-4", `
+  "branch-name-5", `
+  "branch-name-6", `
   "branch-name-7",) `
 | Select -First 1 `
 | % { git fetch upstream; git checkout -b $_ upstream\$_; git merge upstream/master; }
