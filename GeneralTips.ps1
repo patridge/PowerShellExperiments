@@ -16,3 +16,8 @@ New-Object string -ArgumentList @('a', i)
 
 ## Create file with variable name of `x`
 New-Item x -Type file
+
+## Limit to first/last/whatever X items from a previous command's enumerable
+{some list} | Select-Object -First 1
+{some list} | Select-Object -Last 1
+{some list} | Select-Object -Skip 5 | Select-Object -First 1
