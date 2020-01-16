@@ -1,0 +1,5 @@
+# Find all modules and paths with publish date of Nov/Dec 2019
+Get-ChildItem -Path .\learn-pr\ -Filter index.yml -Recurse | % { [pscustomobject]@{ File = $_; Uid = (Select-String -Path $_ -Pattern "^uid"); MsDateLine = (Select-String -Path $_ -Pattern "ms.date") } } | ? { $_.MsDateLine -Match ".*((11)|(12Get-ChildItem -Path .\learn-pr\ -Filter index.yml -Recurse | % { [pscustomobject]@{ File = $_; Uid = (Select-String -Path $_ -Pattern "^uid"); MsDateLine = (Select-String -Path $_ -Pattern "ms.date") } } | ? { $_.MsDateLine -Match ".*((11)|(12))/.*/2019.*" } | % { $_.Uid.Line + ": " + $_.MsDateLine.Line } | clip
+
+# Find all paths with publish date of Nov/Dec 2019
+Get-ChildItem -Path .\learn-pr\paths -Filter index.yml -Recurse | % { [pscustomobject]@{ File = $_; Uid = (Select-String -Path $_ -Pattern "^uid"); MsDateLine = (Select-String -Path $_ -Pattern "ms.date") } } | ? { $_.MsDateLine -Match ".*((11)|(12))/.*/2019.*" } | % { $_.Uid.Line + ": " + $_.MsDateLine.Line } | clip
