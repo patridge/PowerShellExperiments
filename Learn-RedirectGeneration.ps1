@@ -5,6 +5,7 @@ Get-ChildItem *.yml | % { $_.Name.Replace(".yml", ".md") } | % { "{ ""source_pat
 
 Get-ChildItem -Directory | % { Get-ChildItem $_ -Filter *.yml | % { Write-Output $_.Name } }
 
+# To generate Microsoft Docs redirects (.openpublishing.redirection.json) entries for a folder of modules, load this script into a .ps1 file and run it from the folder location.
 ForEach ($moduleDirectory in Get-ChildItem -Directory) {
     $unitYamlFiles = Get-ChildItem $moduleDirectory -Filter *.yml
     $unitYamlFiles | % {
