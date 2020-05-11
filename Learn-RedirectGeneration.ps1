@@ -12,7 +12,7 @@ ForEach ($moduleDirectory in Get-ChildItem -Directory) {
         $ymlName = $_.Name
         $mdName = $ymlName.Replace(".yml", ".md")
         $noExtensionName = $_.Name.Replace(".yml", "")
-        $redirectLastSegment = $noExtensionName -eq "index" ? "" : "$noExtensionName/"
+        $redirectLastSegment = "$noExtensionName"
         Write-Output "    {`n      ""source_path"": ""learn-pr/languages/$($moduleDirectory.Name)/$mdName"",`n      ""redirect_url"": ""https://docs.microsoft.com/learn/modules/$($moduleDirectory.Name)/$redirectLastSegment"",`n      ""redirect_document_id"": true`n    },"
     }
 }
