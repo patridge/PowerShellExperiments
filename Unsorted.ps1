@@ -1,0 +1,4 @@
+# These are commands from my history that looked useful and may be helpful going forward, but I may have forgotten why I was using them. As I remember, they will get their own files.
+
+# Looks like I was finding learning paths that were published in November/December of 2019 and then return some text to make a list of them.
+Get-ChildItem -Path .\learn-pr\paths -Filter index.yml -Recurse | % { [pscustomobject]@{ File = $_; Uid = (Select-String -Path $_ -Pattern "^uid"); MsDateLine = (Select-String -Path $_ -Pattern "ms.date") } } | ? { $_.MsDateLine -Match ".*((11)|(12))/.*/2019.*" } | % { $_.Uid.Line + ": " + $_.MsDateLine.Line } | clip
