@@ -3,4 +3,4 @@
 @("This is some Title with capitalization", `
   "Here is Another Cool module title") `
 | % { "NEW-" + ($_.Replace(" ", "-").Replace(",", "").ToLowerInvariant()) } `
-| % { git fetch upstream; git checkout -b $_ upstream/master; git push --set-upstream upstream $_ }
+| % { git fetch upstream; git checkout -b $_ upstream/master; git push --set-upstream upstream $_; git checkout master; git branch -D $_ }
