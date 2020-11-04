@@ -6,7 +6,7 @@
   "branch-name-5", `
   "branch-name-6", `
   "branch-name-7",) `
-| Select -First 1 `
+| Select -First 1 ` # This line limits to first branch for testing. Remove this line to operate across all branch names.
 | % { git fetch upstream; git checkout -b $_ upstream\$_; git merge upstream/master; }
 
 # Update a remote feature branch by PR with the latest from remote `master`.
