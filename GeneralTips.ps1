@@ -25,3 +25,9 @@ New-Item x -Type file
 # Access a field/property with an unusual name (e.g., contains a period in the name itself)
 # Wrap name in curly braces. This is not a placeholder like `{some list}` usage above.
 $X.{Some.Property.With.Period}
+
+# Bulk change of file extension
+# In this case, I'm changing a bunch of audiobook CD files from .m4a to .m4b to use them in the audiobook portion of the iTunes/Music app on macOS
+Get-ChildItem . -Recurse -Filter *.m4a | Rename-Item -NewName {[System.IO.Path]::ChangeExtension($_.Name, ".m4b")}
+# Equivalent with an explicit setting of the `-Path` parameter (implied above)
+Get-ChildItem . -Recurse -Filter *.m4a | % { Rename-Item -Path $_ -NewName ([System.IO.Path]::ChangeExtension($_.Name, ".m4b")) }
