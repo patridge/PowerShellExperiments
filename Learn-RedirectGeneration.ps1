@@ -19,4 +19,4 @@ ForEach ($moduleDirectory in Get-ChildItem -Directory) {
 
 # Notes
 # * The `source_path` is the local file path and may not look remotely similar to the web URL.
-# * Even though modules and paths don't have an index.md file locally, you still write the redirect against a `source_path` that includs `index.md`.
+# * Even though modules and paths don't have an index.md file locally, you still write the redirect against a `source_path` that includes `index.md`.
