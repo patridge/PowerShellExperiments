@@ -31,3 +31,7 @@ $X.{Some.Property.With.Period}
 Get-ChildItem . -Recurse -Filter *.m4a | Rename-Item -NewName {[System.IO.Path]::ChangeExtension($_.Name, ".m4b")}
 # Equivalent with an explicit setting of the `-Path` parameter (implied above)
 Get-ChildItem . -Recurse -Filter *.m4a | % { Rename-Item -Path $_ -NewName ([System.IO.Path]::ChangeExtension($_.Name, ".m4b")) }
+
+# Line breaks in strings (\n or \r\n in C# and friends)
+"First line`nSecond line"
+"First line`r`nSecond line"
