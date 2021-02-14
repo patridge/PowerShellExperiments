@@ -14,23 +14,14 @@ X | Format-List -Property *
 # String of length `i`, composed of `a`s (mostly just calling `new string('a', i)`)
 New-Object string -ArgumentList @('a', i)
 
-# Create file with variable name of `x`
-New-Item x -Type file
-
 # Limit to first/last/whatever X items from a previous command's enumerable
 {some list} | Select-Object -First 1
 {some list} | Select-Object -Last 1
 {some list} | Select-Object -Skip 5 | Select-Object -First 1
 
-# Access a field/property with an unusual name (e.g., contains a period in the name itself)
-# Wrap name in curly braces. This is not a placeholder like `{some list}` usage above.
+# Access a field/property with an unusual name (e.g., contains a period or special characters in the field name itself)
+# Wrap name in curly braces. (NOTE: This is not a placeholder like the `{some list}` usage above.)
 $X.{Some.Property.With.Period}
-
-# Bulk change of file extension
-# In this case, I'm changing a bunch of audiobook CD files from .m4a to .m4b to use them in the audiobook portion of the iTunes/Music app on macOS
-Get-ChildItem . -Recurse -Filter *.m4a | Rename-Item -NewName {[System.IO.Path]::ChangeExtension($_.Name, ".m4b")}
-# Equivalent with an explicit setting of the `-Path` parameter (implied above)
-Get-ChildItem . -Recurse -Filter *.m4a | % { Rename-Item -Path $_ -NewName ([System.IO.Path]::ChangeExtension($_.Name, ".m4b")) }
 
 # Line breaks in strings (\n or \r\n in C# and friends)
 "First line`nSecond line"
