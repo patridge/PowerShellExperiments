@@ -23,7 +23,9 @@
     }
 ) | % { $module = $_; Get-ChildItem -Path $module.OldModulePath *.yml | % { $_.Name.Replace(".yml", ".md") } | % { $unit = $_; $oldPath = $module.OldModulePath; $newUrl = $module.NewModuleUrl; "    {`n      ""source_path"": ""$oldPath/$unit"",`n      ""redirect_url"": ""https://docs.microsoft.com/learn/modules/$newUrl"",`n      ""redirect_document_id"": false`n    }" } } | Join-String -Separator ",`n"
 
-# To generate Microsoft Docs redirects (.openpublishing.redirection.json) entries for a folder of modules, load this script into a .ps1 file and run it from the folder location.
+# To generate Microsoft Docs redirects (.openpublishing.redirection.json) entries for a folder of modules, run this script from the folder location.
+$moduleFolderName = [System.IO.Path]::GetFileName((Get-Location).Path)
+# $moduleFolderName = "azure-networking" # FUTURE: Get current directory name via something like `Get-Location`.
 ForEach ($moduleDirectory in Get-ChildItem -Directory) {
     $unitYamlFiles = Get-ChildItem $moduleDirectory -Filter *.yml
     $unitYamlFiles | % {
@@ -31,6 +33,6 @@ ForEach ($moduleDirectory in Get-ChildItem -Directory) {
         $mdName = $ymlName.Replace(".yml", ".md")
         $noExtensionName = $_.Name.Replace(".yml", "")
         $redirectLastSegment = "$noExtensionName"
-        Write-Output "    {`n      ""source_path"": ""learn-pr/languages/$($moduleDirectory.Name)/$mdName"",`n      ""redirect_url"": ""https://docs.microsoft.com/learn/modules/$($moduleDirectory.Name)/$redirectLastSegment"",`n      ""redirect_document_id"": true`n    },"
+        Write-Output "    {`n      ""source_path"": ""learn-pr/$moduleFolderName/$($moduleDirectory.Name)/$mdName"",`n      ""redirect_url"": ""https://docs.microsoft.com/learn/modules/$($moduleDirectory.Name)/$redirectLastSegment"",`n      ""redirect_document_id"": true`n    },"
     }
 }
