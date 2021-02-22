@@ -19,6 +19,13 @@ New-Object string -ArgumentList @('a', i)
 {some list} | Select-Object -Last 1
 {some list} | Select-Object -Skip 5 | Select-Object -First 1
 
+# Find object in list by regex-like search (e.g., name contains "something" to find files like "somethingcool.txt")?
+# `-like` is a not-quite-regex wildcard syntax
+{command} | ? { $_.Name -like "*{keyword}*" }
+# `-match` uses a regex syntax
+{command} | ? { $_.Name -match "{keyword}" }
+{command} | ? { $_.Name -match "{keyword1}.*{keyword2}.*" }
+
 # Access a field/property with an unusual name (e.g., contains a period or special characters in the field name itself)
 # Wrap name in curly braces. (NOTE: This is not a placeholder like the `{some list}` usage above.)
 $X.{Some.Property.With.Period}
