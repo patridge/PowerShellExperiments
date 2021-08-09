@@ -12,3 +12,8 @@ Get-ChildItem . -Recurse -Filter *.m4a | % { Rename-Item -Path $_ -NewName ([Sys
 # (???: There may be some difference between the current location and where the command was run.)
 [System.IO.Path]::GetFileName((Get-Location).Path)
 [System.IO.Path]::GetFileName($PWD.Path)
+
+# Are two file byte arrays equal (Note: diff output when not the same is not really useful on byte arrays)
+-not (Compare-Object -ReferenceObject ([System.IO.File]::ReadAllBytes("path\to\file1")) -DifferenceObject ([System.IO.File]::ReadAllBytes("path\to\file2")))
+Get-ChildItem -Recurse -File | Sort-Object -Property Name | % { Get-FileHash -Path $_ -Algorithm MD5 }
+Get-ChildItem -Recurse -File | Sort-Object -Property Name | % { Get-FileHash -Path $_ -Algorithm SHA256 }
