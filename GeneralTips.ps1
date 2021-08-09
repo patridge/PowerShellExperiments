@@ -33,3 +33,8 @@ $X.{Some.Property.With.Period}
 # Line breaks in strings (\n or \r\n in C# and friends)
 "First line`nSecond line"
 "First line`r`nSecond line"
+
+# Edit your PowerShell profile
+notepad.exe $profile # Windows Notepad
+code $profile # Visual Studio Code (Windows/macOS/Linux)
+nano $profile # Linux Nano
