@@ -17,3 +17,33 @@ foreach ($group in (Get-ChildItem GH*.MP4 -Exclude GH*${outputCombinedVideoSuffi
     & ${ffmpegLocation} -f concat -safe 0 -i ./$concatFileListName -c copy $concatFileOutputName
     Remove-Item $concatFileListName
 }
+
+## Prior system for processing a single long sports recording
+
+$hockeyAgeGroup = "12U"
+$hockeyMyTeam = "Cheyenne ${hockeyAgeGroup}"
+$hockeyGameDate = "20201031"
+$hockeyGameOpponents = "Wolverines"
+$videoLocation = "" # " (tournament)" # " (stands)" # e.g., game type or video location
+$gameSuffix = "" # " (2 of 2)" # e.g., series
+
+$hockeyGameName = "${hockeyMyTeam} vs. ${hockeyGameOpponents}${videoLocation}${gameSuffix}"
+$videoProjectName = "${hockeyGameDate} ${hockeyGameName}"
+
+Get-ChildItem | Sort-Object -Property LastWriteTime | ? { $_.Name.EndsWith(".MP4") } | % { $_.Name } | % { "file '" + $_ + "'" } > mylist.txt
+~/Tools/ffmpeg/ffmpeg.exe -f concat -safe 0 -i ./mylist.txt -c copy $videoProjectName-raw.mp4
+#~/Tools/ffmpeg -f concat -safe 0 -i ./mylist.txt -c copy
+
+# Manual step: Find start and end times for next commands
+
+~/Tools/ffmpeg/ffmpeg.exe -i "./${videoProjectName}-raw.mp4" -ss 00:21:06 -to 01:11:38 -c copy "${videoProjectName}-trimmed.mp4"
+
+~/Tools/ffmpeg -i "./${videoProjectName}-raw.mp4" -ss 00:31:50 -to 01:50:22 -c copy "${videoProjectName}-trimmed.mp4"
+
+# Process for YouTube
+
+~/Tools/ffmpeg -i "./${videoProjectName}-trimmed.mp4" -vf yadif,format=yuv420p -force_key_frames "expr:gte(t,n_forced/2)" -c:v libx264 -crf 18 -bf 2 -c:a aac -q:a 1 -ac 2 -ar 48000 -use_editlist 0 -movflags +faststart "${videoProjectName}-processed.mp4"
+
+Measure-Command { ~/Tools/ffmpeg/ffmpeg.exe -i "./${videoProjectName}-trimmed.mp4" -vf yadif,format=yuv420p -force_key_frames "expr:gte(t,n_forced/2)" -c:v libx264 -crf 18 -bf 2 -c:a aac -q:a 1 -ac 2 -ar 48000 -use_editlist 0 -movflags +faststart "${videoProjectName}-processed.mp4" }
+
+Measure-Command { ~/Tools/ffmpeg -i "./${videoProjectName}-trimmed.mp4" -vf yadif,format=yuv420p -force_key_frames "expr:gte(t,n_forced/2)" -c:v libx264 -crf 18 -bf 2 -c:a aac -q:a 1 -ac 2 -ar 48000 -use_editlist 0 -movflags +faststart "${videoProjectName}-processed.mp4" }
