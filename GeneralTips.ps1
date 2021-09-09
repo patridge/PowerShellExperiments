@@ -38,3 +38,9 @@ $X.{Some.Property.With.Period}
 notepad.exe $profile # Windows Notepad
 code $profile # Visual Studio Code (Windows/macOS/Linux)
 nano $profile # Linux Nano
+
+# Get user input for an environment variable
+${Env:AzDOPersonalToken} = (Read-Host -Prompt "What Azure DevOps access token do you want to use?")
+# Get user input without displaying it (e.g., password input)
+${Env:AzDOPersonalToken} = (Read-Host -Prompt "What Azure DevOps access token do you want to use?" -AsSecureString)
+# NOTE: Environment variable names can contain characters not normally allowed in normal PowerShell variables. The curly brace syntax allows for those characters, if needed (e.g., `${Env:azdo-personal-token}`).
