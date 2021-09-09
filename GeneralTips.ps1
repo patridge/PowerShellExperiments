@@ -44,3 +44,13 @@ ${Env:AzDOPersonalToken} = (Read-Host -Prompt "What Azure DevOps access token do
 # Get user input without displaying it (e.g., password input)
 ${Env:AzDOPersonalToken} = (Read-Host -Prompt "What Azure DevOps access token do you want to use?" -AsSecureString)
 # NOTE: Environment variable names can contain characters not normally allowed in normal PowerShell variables. The curly brace syntax allows for those characters, if needed (e.g., `${Env:azdo-personal-token}`).
+
+# Add path to user environment Path variable
+$oldPath = [System.Environment]::GetEnvironmentVariable("Path", [System.EnvironmentVariableTarget]::User)
+$newPathAddition = "C:\Users\someuser\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.8_qbz5n2kfra8p0\LocalCache\local-packages\Python38\Scripts\"
+# Concatenate old with addition via semicolon
+$newPath = "$oldPath;$newPath"
+# Save new combined path to user Path
+[System.Environment]::SetEnvironmentVariable("Path", "$newPath", [System.EnvironmentVariableTarget]::User)
+# Update the current path in this PowerShell session (vs. logging out and back in)
+$env:Path = [System.Environment]::GetEnvironmentVariable("Path", [System.EnvironmentVariableTarget]::User)
