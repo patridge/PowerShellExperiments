@@ -17,3 +17,8 @@ Get-ChildItem . -Recurse -Filter *.m4a | % { Rename-Item -Path $_ -NewName ([Sys
 -not (Compare-Object -ReferenceObject ([System.IO.File]::ReadAllBytes("path\to\file1")) -DifferenceObject ([System.IO.File]::ReadAllBytes("path\to\file2")))
 Get-ChildItem -Recurse -File | Sort-Object -Property Name | % { Get-FileHash -Path $_ -Algorithm MD5 }
 Get-ChildItem -Recurse -File | Sort-Object -Property Name | % { Get-FileHash -Path $_ -Algorithm SHA256 }
+
+# Compare file hash to known valid value
+$ValidHash = "ABC123"
+$CalculatedHash = Get-FileHash -Path '~\Downloads\SomeFile.zip' -Algorithm MD5 # Or SHA256, etc.
+$ValidHash -eq $CalculatedHash.Hash
