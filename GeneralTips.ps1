@@ -29,6 +29,8 @@ New-Object string -ArgumentList @('a', i)
 # Access a field/property with an unusual name (e.g., contains a period or special characters in the field name itself)
 # Wrap name in curly braces. (NOTE: This is not a placeholder like the `{some list}` usage above.)
 $X.{Some.Property.With.Period}
+# This can also apply to complex environment variable names.
+${env:ProgramFiles(x86)}
 
 # Line breaks in strings (\n or \r\n in C# and friends)
 "First line`nSecond line"
