@@ -13,3 +13,4 @@ Get-Command -Name *{keyword}*
 Get-Alias -Definition {command}
 # In the opposite direction, if you want the original command for what you think is an alias, Get-Help will tell you.
 Get-Help % # Shorthand for the `ForEach-Object` command
+# NOTE: This doesn't work for `&` character (`Get-Help &`), which will just output running jobs.
