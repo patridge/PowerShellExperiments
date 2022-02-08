@@ -4,6 +4,10 @@ X | Format-List -Property *
 # Make anything an array by wrapping it in `@(X)`
 @("Just one thing") # is an array of that one string
 
+# Creating a Hashtable manually/declaritively (see also ConvertingToAndFromPSObjectAndHashtable.ps1)
+# NOTE: remember to use semicolon between key-value pairs rather than C#-style comma
+$x = @{ a = "asdf"; b = 3 }
+
 # Get the length of an array piped (vs. `(X | Y).Length`)
  | Measure-Object # Returns an object, though, with a Count property
  | Measure-Object | % { $_.Count } # Bit of a hack, but single item arrays will output the only item as a string
@@ -32,6 +36,14 @@ $X.{Some.Property.With.Period}
 # This can also apply to complex environment variable names.
 ${env:ProgramFiles(x86)}
 
+# Build strings from variables.
+# Basic
+Write-Host "$someVar1: $someVar2"
+# Complex variable names need curly braces (`${}`)
+Write-Host "$someVar1: ${env:ProgramFiles(x86)}"
+# Operations require parentheses (`$()`)
+Write-Host "Current file path: $((Get-ChildItem GeneralTips.ps1).FullName)"
+
 # Line breaks in strings (\n or \r\n in C# and friends)
 "First line`nSecond line"
 "First line`r`nSecond line"
@@ -56,3 +68,11 @@ $newPath = "$oldPath;$newPath"
 [System.Environment]::SetEnvironmentVariable("Path", "$newPath", [System.EnvironmentVariableTarget]::User)
 # Update the current path in this PowerShell session (vs. logging out and back in)
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path", [System.EnvironmentVariableTarget]::User)
+
+# List all the current local variables, useful for debugging variable values at a current point in execution
+Get-Variable -Scope Local
+# NOTE: This appears to provide a way to get a variables name at runtime, as you would do with C#'s `nameof` operator, but that's not how this works. The value passed in to `Get-Variable` is a string, so calling with variable syntax will get the variable with the name of the underlying variable value. (If `$test="asdf"`, then `Get-Variable $test` will look for a variable named `$asdf`.):
+#       `(Get-Variable test).Name` # Name not validated in any way.
+
+## References
+# Red Gate's PowerShell punctuation guide: https://www.red-gate.com/simple-talk/wp-content/uploads/2015/09/PSPunctuationWallChart_1_0_4.pdf
