@@ -18,6 +18,22 @@ $keyName = "b"; $x[$keyName]
 $keyName = "b"; $x.($keyName)
 $keyName = "b"; $x.Item($keyName)
 
+# NOTE: Haven't been able to find a way to access unusually-named hashtable keys via curly-brace syntax
+# > $x = @{ a = "asdf"; b = 3; {funky-key} = "hello" }
+# > $x.{funky-key}
+# > $x[{funky-key}]
+# > $x.({funky-key})
+# > $x.("funky-key")
+# > $x.Item("funky-key")
+# None of these attempts resulted in the text set for the variable.
+# But you can see the value set by dumping all of $x
+# > $x
+# Name                           Value
+# ----                           -----
+# b                              3
+# funky-key                      hello
+# a                              asdf
+
 # Create a new arbitrary PSCustomObject from a hashtable
 # Just convert it
 $some_psobj = [pscustomobject]@{ a = "asdfasdf"; b = 4 }
