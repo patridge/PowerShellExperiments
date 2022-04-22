@@ -22,3 +22,12 @@ Get-ChildItem -Recurse -File | Sort-Object -Property Name | % { Get-FileHash -Pa
 $ValidHash = "ABC123"
 $CalculatedHash = Get-FileHash -Path '~\Downloads\SomeFile.zip' -Algorithm MD5 # Or SHA256, etc.
 $ValidHash -eq $CalculatedHash.Hash
+
+# Get all folders in a directory
+Get-ChildItem -Directory
+Get-ChildItem -Path {whatever} -Directory
+# Get all hidden items in a directory
+Get-ChildItem -Hidden
+Get-ChildItem -Path {whatever} -Hidden
+# Hidden directories
+Get-ChildItem -Path {whatever} -Hidden -Directory
