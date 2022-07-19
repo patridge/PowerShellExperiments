@@ -2,7 +2,7 @@
 $upstreamRemote = "upstream"; `
 Get-ChildItem -Directory `
   | Where-Object Name -NotIn @("_myprojects", "NetduinoSamples") `
-  | ForEach {  `
+  | ForEach-Object {  `
     Set-Location $_; `
     $currentBranch = (git branch --show-current); `
     $commitsAhead = (git rev-list $currentBranch --not $upstreamRemote/$currentBranch --count); `
@@ -14,7 +14,7 @@ Get-ChildItem -Directory `
 $upstreamRemote = "upstream"; `
 Get-ChildItem -Directory `
   | Where-Object Name -NotIn @("_myprojects", "NetduinoSamples") `
-  | ForEach { `
+  | ForEach-Object { `
     Set-Location $_; `
     $currentBranch = (git branch --show-current); `
     $commitsAhead = (git rev-list $currentBranch --not $upstreamRemote/$currentBranch --count); `
