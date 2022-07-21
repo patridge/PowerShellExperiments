@@ -18,7 +18,7 @@ $x = @{ a = "asdf"; b = 3 }
 # String of length `i`, composed of `a`s (mostly just calling `new string('a', i)`)
 New-Object string -ArgumentList @('a', i)
 
-# Limit to first/last/whatever X items from a previous command's enumerable
+# Limit to first[/top]/last/whatever X items from a previous command's enumerable
 {some list} | Select-Object -First 1
 {some list} | Select-Object -Last 1
 {some list} | Select-Object -Skip 5 | Select-Object -First 1
