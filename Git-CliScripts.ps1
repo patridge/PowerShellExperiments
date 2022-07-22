@@ -23,100 +23,232 @@ Get-ChildItem -Directory `
     Set-Location .. `
   }
 
-# Do something for each repo
+# Get the latest dev commits for each repo.
+# Multi-line commands are marked with the continuation character for ease of use in a CLI, but are not needed for a full script file.
 $upstreamRemoteDefault = "upstream";
 $upstreamDevelopBranchDefault = "develop";
+# Start with a list of all the repos we want to check.
+$repoNames = @( `
+  "DefCon-Badge-2022", `
+  "Meadow.CLI", `
+  "Meadow.Contracts", `
+  "Meadow.Core", `
+  "Meadow.Core.Samples", `
+  "Meadow.Foundation", `
+  "Meadow.Foundation.Grove", `
+  "Meadow.Foundation.Featherwings", `
+  "Meadow.Foundation.MikroBus", `
+  "Meadow.Logging", `
+  "Meadow.Project.Samples", `
+  "Meadow.ProjectLab.Samples", `
+  "Meadow.Units", `
+  "Meadow_Samples", `
+  "VSCode_Meadow_Extension" `
+);
+# Create a list of all repo default overrides to the defaults.
+# NOTE: Not using [PSCustomObject] because `Add-Member -NotePropertyMembers` doesn't work with those objects.
+$repoCustomDetails = @( `
+  @{ `
+    RepoName = "DefCon-Badge-2022"; `
+    UpstreamDevelopBranch = "main"; `
+  }, `
+  @{ `
+    RepoName = "Meadow.Logging"; `
+    UpstreamDevelopBranch = "main"; `
+  }, `
+  @{ `
+    RepoName = "Meadow.Project.Samples"; ` `
+    UpstreamDevelopBranch = "b6.5";  `
+  } `
+);
+# Build up a list of repo details using the defaults.
+$repoDetailList = $repoNames `
+  | ForEach-Object { `
+    [PSCustomObject]@{ `
+      RepoName = $_; `
+      RepoUrl = "https://github.com/WildernessLabs/$_.git"; `
+      UpstreamRemoteName = $upstreamRemoteDefault; `
+      UpstreamDevelopBranch = $upstreamDevelopBranchDefault; `
+    } `
+  };
+# Merge any custom repo overrides with the bulk-generated defaults.
+$repoCustomDetails `
+  | ForEach-Object { `
+    $repoName = $_.RepoName; `
+    $repoDefaults = $repoDetailList | Where-Object { $_.RepoName -eq $repoName }; `
+    if ($repoDefaults -ne $null) { `
+      $repoDefaults | Add-Member -NotePropertyMembers $_ -PassThru -Force; `
+    } `
+  };
+$repoDetailList `
+  | ForEach-Object { `
+    # Try to get the latest changes from all upstream repos. `
+    Write-Host "Repo: $($_.RepoName)"; `
+    if (Test-Path -Path $_.RepoName) { `
+      Set-Location $_.RepoName; `
+      $currentBranch = (git branch --show-current); `
+      if ($currentBranch -eq $_.UpstreamDevelopBranch) { `
+        # Found expected dev branch currently checked out; proceeding... `
+        $expectedRemoteName = $_.UpstreamRemoteName; `
+        $availableRemoteNames = git remote; `
+        if ($LASTEXITCODE -eq 1) { `
+          # External `git` call failed (git remote). `
+          Write-Warning "`tError getting repo remotes: $($_.RepoName)."; `
+          $availableRemoteNames = @(); `
+        } `
+        $hasExpectedRemote = ($availableRemoteNames | Where-Object { $_ -eq $expectedRemoteName }).Count -eq 1; `
+        Write-Host $hasExpectedRemote; `
+        if (!$hasExpectedRemote) { `
+          # Didn't find expected Git remote. `
+          Write-Host "`tRemote not available: $($_.UpstreamRemoteName)."; `
+          Write-Warning "`tSkipped update: $($_.RepoName)."; `
+        } else { `
+          Write-Host "`tPulling latest from $($_.UpstreamRemoteName)/$($_.UpstreamDevelopBranch)."; `
+          git pull $($_.UpstreamRemoteName) $($_.UpstreamDevelopBranch); `
+          if ($LASTEXITCODE -eq 1) { `
+            # External `git` call failed (git pull). `
+            Write-Warning "`tError pulling latest upstream changes: $($_.RepoName) $($_.UpstreamRemoteName)/$($_.UpstreamDevelopBranch)."; `
+          } else { `
+            # External `git` call succeeded (git pull). `
+            Write-Host "`tUpdated with latest upstream changes: $($_.RepoName) $($_.UpstreamRemoteName)/$($_.UpstreamDevelopBranch)."; `
+          } `
+        } `
+      } else { `
+        # Not on the desired dev branch. Requesting an update to the dev branch without impacting current branch. `
+        Write-Host "`tRepo $($_.RepoName) not on expected dev branch ($($currentBranch) vs. $($_.UpstreamDevelopBranch)).`n`tAttempting to update adjacent dev branch."; `
+        git fetch $($_.UpstreamRemoteName) $($_.UpstreamDevelopBranch):$($_.UpstreamDevelopBranch); `
+        if ($LASTEXITCODE -eq 1) { `
+          # External `git` call failed (git fetch). `
+          Write-Warning "`tError updating adjacent dev branch: $($_.RepoName) $($_.UpstreamRemoteName)/$($_.UpstreamDevelopBranch).`n`t`tMake sure your dev branch isn't ahead of the upstream dev branch."; `
+        } else { `
+          Write-Host "`tUpdated adjacent dev branch: $($_.RepoName) $($_.UpstreamDevelopBranch).`n`t`tYour current branch was unaffected ($($currentBranch))."; `
+        } `
+      } `
+      Set-Location .. `
+    } else { `
+      # Repo not found; cloning new... `
+      Write-Host "`tRepo folder not found: cloning..."; `
+      git clone --branch $($_.UpstreamDevelopBranch) --origin $($_.UpstreamRemoteName) $($_.RepoUrl); `
+      if ($LASTEXITCODE -eq 1) { `
+        # External `git` call failed (git clone). `
+        Write-Warning "`tError cloning repo: $($_.RepoName)"; `
+      } else { `
+        # External `git` call succeeded (git clone). `
+        Write-Host "`tCloned new repo: $($_.RepoName)"; `
+      } `
+    } `
+  };
+
+# Original version that generated code to then customize manually before running
 $repoDetails = @( `
-  [pscustomobject]@{ `
+  [PSCustomObject]@{ `
     Name = "DefCon-Badge-2022"; `
-    RepoName = "https://github.com/WildernessLabs/DefCon-Badge-2022.git"; `
+    RepoUrl = "https://github.com/WildernessLabs/DefCon-Badge-2022.git"; `
     DevBranch = "main"; `
-    UpstreamRemote = $upstreamRemoteDefault; `
+    UpstreamRemoteName = $upstreamRemoteDefault; `
   }, `
-  [pscustomobject]@{ `
+  [PSCustomObject]@{ `
     Name = "Meadow.CLI"; `
-    RepoName = "https://github.com/WildernessLabs/Meadow.CLI.git"; `
+    RepoUrl = "https://github.com/WildernessLabs/Meadow.CLI.git"; `
     DevBranch = $upstreamDevelopBranchDefault; `
-    UpstreamRemote = $upstreamRemoteDefault; `
+    UpstreamRemoteName = $upstreamRemoteDefault; `
   }, `
-  [pscustomobject]@{ `
+  [PSCustomObject]@{ `
     Name = "Meadow.Contracts"; `
-    RepoName = "https://github.com/WildernessLabs/Meadow.Contracts.git"; `
+    RepoUrl = "https://github.com/WildernessLabs/Meadow.Contracts.git"; `
     DevBranch = $upstreamDevelopBranchDefault; `
-    UpstreamRemote = $upstreamRemoteDefault; `
+    UpstreamRemoteName = $upstreamRemoteDefault; `
   }, `
-  [pscustomobject]@{ `
+  [PSCustomObject]@{ `
     Name = "Meadow.Core"; `
-    RepoName = "https://github.com/WildernessLabs/Meadow.Core.git"; `
+    RepoUrl = "https://github.com/WildernessLabs/Meadow.Core.git"; `
     DevBranch = $upstreamDevelopBranchDefault; `
-    UpstreamRemote = $upstreamRemoteDefault; `
+    UpstreamRemoteName = $upstreamRemoteDefault; `
   }, `
-  [pscustomobject]@{ `
+  [PSCustomObject]@{ `
     Name = "Meadow.Core.Samples"; `
-    RepoName = "https://github.com/WildernessLabs/Meadow.Core.Samples.git"; `
+    RepoUrl = "https://github.com/WildernessLabs/Meadow.Core.Samples.git"; `
     DevBranch = $upstreamDevelopBranchDefault; `
-    UpstreamRemote = $upstreamRemoteDefault; `
+    UpstreamRemoteName = $upstreamRemoteDefault; `
   }, `
-  [pscustomobject]@{ `
+  [PSCustomObject]@{ `
     Name = "Meadow.Foundation"; `
-    RepoName = "https://github.com/WildernessLabs/Meadow.Foundation.git"; `
+    RepoUrl = "https://github.com/WildernessLabs/Meadow.Foundation.git"; `
     DevBranch = $upstreamDevelopBranchDefault; `
-    UpstreamRemote = $upstreamRemoteDefault; `
+    UpstreamRemoteName = $upstreamRemoteDefault; `
   }, `
-  [pscustomobject]@{ `
+  [PSCustomObject]@{ `
+    Name = "Meadow.Foundation.Grove"; `
+    RepoUrl = "https://github.com/WildernessLabs/Meadow.Foundation.Grove.git"; `
+    DevBranch = $upstreamDevelopBranchDefault; `
+    UpstreamRemoteName = $upstreamRemoteDefault; `
+  }, `
+  [PSCustomObject]@{ `
+    Name = "Meadow.Foundation.Featherwings"; `
+    RepoUrl = "https://github.com/WildernessLabs/Meadow.Foundation.Featherwings.git"; `
+    DevBranch = $upstreamDevelopBranchDefault; `
+    UpstreamRemoteName = $upstreamRemoteDefault; `
+  }, `
+  [PSCustomObject]@{ `
+    Name = "Meadow.Foundation.MikroBus"; `
+    RepoUrl = "https://github.com/WildernessLabs/Meadow.Foundation.MikroBus.git"; `
+    DevBranch = $upstreamDevelopBranchDefault; `
+    UpstreamRemoteName = $upstreamRemoteDefault; `
+  }, `
+  [PSCustomObject]@{ `
     Name = "Meadow.Logging"; `
-    RepoName = "https://github.com/WildernessLabs/Meadow.Logging.git"; `
+    RepoUrl = "https://github.com/WildernessLabs/Meadow.Logging.git"; `
     DevBranch = "main"; `
-    UpstreamRemote = $upstreamRemoteDefault; `
+    UpstreamRemoteName = $upstreamRemoteDefault; `
   }, `
-  [pscustomobject]@{ `
+  [PSCustomObject]@{ `
     Name = "Meadow.Project.Samples"; `
-    RepoName = "https://github.com/WildernessLabs/Meadow.Project.Samples.git"; `
+    RepoUrl = "https://github.com/WildernessLabs/Meadow.Project.Samples.git"; `
     DevBranch = "b6.5"; `
-    UpstreamRemote = $upstreamRemoteDefault; `
+    UpstreamRemoteName = $upstreamRemoteDefault; `
   }, `
-  [pscustomobject]@{ `
+  [PSCustomObject]@{ `
     Name = "Meadow.ProjectLab.Samples"; `
-    RepoName = "https://github.com/WildernessLabs/Meadow.ProjectLab.Samples.git"; `
+    RepoUrl = "https://github.com/WildernessLabs/Meadow.ProjectLab.Samples.git"; `
     DevBranch = $upstreamDevelopBranchDefault; `
-    UpstreamRemote = $upstreamRemoteDefault; `
+    UpstreamRemoteName = $upstreamRemoteDefault; `
   }, `
-  [pscustomobject]@{ `
+  [PSCustomObject]@{ `
     Name = "Meadow.Units"; `
-    RepoName = "https://github.com/WildernessLabs/Meadow.Units.git"; `
+    RepoUrl = "https://github.com/WildernessLabs/Meadow.Units.git"; `
     DevBranch = $upstreamDevelopBranchDefault; `
-    UpstreamRemote = $upstreamRemoteDefault; `
+    UpstreamRemoteName = $upstreamRemoteDefault; `
   }, `
-  [pscustomobject]@{ `
+  [PSCustomObject]@{ `
     Name = "Meadow_Samples"; `
-    RepoName = "https://github.com/WildernessLabs/Meadow_Samples.git"; `
+    RepoUrl = "https://github.com/WildernessLabs/Meadow_Samples.git"; `
     DevBranch = $upstreamDevelopBranchDefault; `
-    UpstreamRemote = $upstreamRemoteDefault; `
+    UpstreamRemoteName = $upstreamRemoteDefault; `
   }, `
-  [pscustomobject]@{ `
+  [PSCustomObject]@{ `
     Name = "VSCode_Meadow_Extension"; `
-    RepoName = "https://github.com/WildernessLabs/VSCode_Meadow_Extension.git"; `
+    RepoUrl = "https://github.com/WildernessLabs/VSCode_Meadow_Extension.git"; `
     DevBranch = $upstreamDevelopBranchDefault; `
-    UpstreamRemote = $upstreamRemoteDefault; `
+    UpstreamRemoteName = $upstreamRemoteDefault; `
   } `
 );
 $repoDetails `
-#| Select-Object -First 1 
-| ForEach-Object { `
-  Set-Location $_.Name; `
-  Write-Host "Repo: $(Get-Location)"; `
-  # TODO: Get current branch
-  $currentBranch = (git branch --show-current); `
-  if ($currentBranch -eq $_.DevBranch) { `
-    git pull $_.UpstreamRemote $_.DevBranch; `
-  } else { `
-    Write-Information "Repo $_.Name not on expected dev branch"; `
-  } `
-  Write-Host "  Branch: $currentBranch"; `
-  # TODO: If currently on $_.DevBranch, pull latest from $_DevBranch
-  # TODO: Else display some output
-  Set-Location .. `
-}
+# | Select-Object -First 1 
+  | ForEach-Object { `
+    Set-Location $_.Name; `
+    Write-Host "Repo: $(Get-Location)"; `
+    # TODO: Get current branch
+    $currentBranch = (git branch --show-current); `
+    if ($currentBranch -eq $_.DevBranch) { `
+      git pull $_.UpstreamRemoteName $_.DevBranch; `
+    } else { `
+      Write-Information "Repo $_.Name not on expected dev branch"; `
+    } `
+    Write-Host "  Branch: $currentBranch"; `
+    # TODO: If currently on $_.DevBranch, pull latest from $_DevBranch
+    # TODO: Else display some output
+    Set-Location .. `
+  }
 
 # Generate the initial array of repo details.
 $repoNames = @( `
@@ -126,6 +258,9 @@ $repoNames = @( `
   "Meadow.Core", `
   "Meadow.Core.Samples", `
   "Meadow.Foundation", `
+  "Meadow.Foundation.Grove", `
+  "Meadow.Foundation.Featherwings", `
+  "Meadow.Foundation.MikroBus", `
   "Meadow.Logging", `
   "Meadow.Project.Samples", `
   "Meadow.ProjectLab.Samples", `
@@ -133,4 +268,8 @@ $repoNames = @( `
   "Meadow_Samples", `
   "VSCode_Meadow_Extension" `
 );
-$repoNames | ForEach-Object { "  [pscustomobject]@{ ```n    Name = ""$_""; ```n    RepoName = ""https://github.com/WildernessLabs/$_.git""; ```n    DevBranch = `$upstreamDevelopBranchDefault; ```n    UpstreamRemote = `$upstreamRemoteDefault; ```n  }, ``" } | Set-Clipboard
+$repoNames | ForEach-Object { "  [PSCustomObject]@{ ```n    RepoName = ""$_""; ```n    RepoUrl = ""https://github.com/WildernessLabs/$_.git""; ```n    DevBranch = `$upstreamDevelopBranchDefault; ```n    UpstreamRemote = `$upstreamRemoteDefault; ```n  }, ``" } | Set-Clipboard
+
+# Add members to existing object.
+# TODO: Hoping to start with a repo array of names and defaults and override only the members in a modifications array of objects.
+[PSCustomObject]@{ x = 5; y = "d" } | Add-Member -NotePropertyMembers @{ z = 3; a = "e" } -PassThru
