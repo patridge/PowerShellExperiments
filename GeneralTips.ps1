@@ -55,8 +55,10 @@ nano $profile # Linux Nano
 
 # Get user input for an environment variable
 ${Env:AzDOPersonalToken} = (Read-Host -Prompt "What Azure DevOps access token do you want to use?")
-# Get user input without displaying it (e.g., password input)
+# Get user input as a secure string, which has special rules for how it is handled.
 ${Env:AzDOPersonalToken} = (Read-Host -Prompt "What Azure DevOps access token do you want to use?" -AsSecureString)
+# Get user input without displaying it (e.g., password input showing **** as the user types).
+${Env:AzDOPersonalToken} = (Read-Host -Prompt "What Azure DevOps access token do you want to use?" -MaskInput)
 # NOTE: Environment variable names can contain characters not normally allowed in normal PowerShell variables. The curly brace syntax allows for those characters, if needed (e.g., `${Env:azdo-personal-token}`).
 
 # Add path to user environment Path variable
