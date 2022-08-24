@@ -76,5 +76,8 @@ Get-Variable -Scope Local
 # NOTE: This appears to provide a way to get a variables name at runtime, as you would do with C#'s `nameof` operator, but that's not how this works. The value passed in to `Get-Variable` is a string, so calling with variable syntax will get the variable with the name of the underlying variable value. (If `$test="asdf"`, then `Get-Variable $test` will look for a variable named `$asdf`.):
 #       `(Get-Variable test).Name` # Name not validated in any way.
 
+# Prevent line's output from showing up when running within a script.
+{some command} | Out-Null;
+
 ## References
 # Red Gate's PowerShell punctuation guide: https://www.red-gate.com/simple-talk/wp-content/uploads/2015/09/PSPunctuationWallChart_1_0_4.pdf
