@@ -1,3 +1,7 @@
+# UNTESTED: via https://mobile.twitter.com/guyrleech/status/1566386500375351297
+Set-StrictMode -version latest
+# Or run through `PSScriptAnalyzer`
+
 # List all properties on an object
 X | Format-List -Property *
 
