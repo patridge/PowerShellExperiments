@@ -31,19 +31,20 @@ $gameSuffix = "" # " (2 of 2)" # e.g., series
 $hockeyGameName = "${hockeyMyTeam} vs. ${hockeyGameOpponents}${videoLocation}${gameSuffix}"
 $videoProjectName = "${hockeyGameDate} ${hockeyGameName}"
 
+$ffmpegLocation = "C:\ProgramData\chocolatey\bin\ffmpeg.exe"
 Get-ChildItem | Sort-Object -Property LastWriteTime | ? { $_.Name.EndsWith(".MP4") } | % { $_.Name } | % { "file '" + $_ + "'" } > mylist.txt
-C:\ProgramData\chocolatey\bin\ffmpeg.exe -f concat -safe 0 -i ./mylist.txt -c copy $videoProjectName-raw.mp4
+& ${ffmpegLocation} -f concat -safe 0 -i ./mylist.txt -c copy $videoProjectName-raw.mp4
 #~/Tools/ffmpeg -f concat -safe 0 -i ./mylist.txt -c copy
 
 # Manual step: Find start and end times for next commands
 
-C:\ProgramData\chocolatey\bin\ffmpeg.exe -i "./${videoProjectName}-raw.mp4" -ss 01:06:28 -to 01:33:14 -c copy "${videoProjectName}-trimmed.mp4"
+& ${ffmpegLocation} -i "./${videoProjectName}-raw.mp4" -ss 00:17:57 -to 01:05:42 -c copy "${videoProjectName}-trimmed.mp4"
 
 #~/Tools/ffmpeg -i "./${videoProjectName}-raw.mp4" -ss 00:00:00 -to 00:56:00 -c copy "${videoProjectName}-trimmed.mp4"
 
 # Process for YouTube
 
-C:\ProgramData\chocolatey\bin\ffmpeg.exe -i "./${videoProjectName}-trimmed.mp4" -vf yadif,format=yuv420p -force_key_frames "expr:gte(t,n_forced/2)" -c:v libx264 -crf 18 -bf 2 -c:a aac -q:a 1 -ac 2 -ar 48000 -use_editlist 0 -movflags +faststart "${videoProjectName}-processed.mp4"
+& ${ffmpegLocation} -i "./${videoProjectName}-trimmed.mp4" -vf yadif,format=yuv420p -force_key_frames "expr:gte(t,n_forced/2)" -c:v libx264 -crf 18 -bf 2 -c:a aac -q:a 1 -ac 2 -ar 48000 -use_editlist 0 -movflags +faststart "${videoProjectName}-processed.mp4"
 
 Measure-Command { ~/Tools/ffmpeg/ffmpeg.exe -i "./${videoProjectName}-trimmed.mp4" -vf yadif,format=yuv420p -force_key_frames "expr:gte(t,n_forced/2)" -c:v libx264 -crf 18 -bf 2 -c:a aac -q:a 1 -ac 2 -ar 48000 -use_editlist 0 -movflags +faststart "${videoProjectName}-processed.mp4" }
 
