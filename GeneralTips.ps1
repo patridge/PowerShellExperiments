@@ -30,6 +30,9 @@ New-Object string -ArgumentList @('a', i)
 {command} | ? { $_.Name -match "{keyword}" }
 {command} | ? { $_.Name -match "{keyword1}.*{keyword2}.*" }
 
+# Use percent variables like those available in cmd.exe (e.g., %USERPROFILE%)
+Write-Host "${Env:USERPROFILE}"
+
 # Access a field/property with an unusual name (e.g., contains a period or special characters in the field name itself)
 # Wrap name in curly braces. (NOTE: This is not a placeholder like the `{some list}` usage above.)
 $X.{Some.Property.With.Period}
