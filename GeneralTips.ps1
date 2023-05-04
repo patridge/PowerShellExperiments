@@ -88,3 +88,7 @@ Get-Variable -Scope Local
 
 ## References
 # Red Gate's PowerShell punctuation guide: https://www.red-gate.com/simple-talk/wp-content/uploads/2015/09/PSPunctuationWallChart_1_0_4.pdf
+
+# Find location where a command is found.
+(Get-Command {command-name}).Source
+# This seems to work more reliably than `where`.
