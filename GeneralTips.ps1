@@ -92,3 +92,6 @@ Get-Variable -Scope Local
 # Find location where a command is found.
 (Get-Command {command-name}).Source
 # This seems to work more reliably than `where`.
+
+# Refresh environment variables after changes.
+refreshenv
