@@ -22,7 +22,7 @@ $x = @{ a = "asdf"; b = 3 }
 # String of length `i`, composed of `a`s (mostly just calling `new string('a', i)`)
 New-Object string -ArgumentList @('a', i)
 
-# Limit to first[/top]/last/whatever X items from a previous command's enumerable
+# Limit to (AKA Take) first[/top]/last/whatever X items from a previous command's enumerable
 {some list} | Select-Object -First 1
 {some list} | Select-Object -Last 1
 {some list} | Select-Object -Skip 5 | Select-Object -First 1
@@ -88,3 +88,10 @@ Get-Variable -Scope Local
 
 ## References
 # Red Gate's PowerShell punctuation guide: https://www.red-gate.com/simple-talk/wp-content/uploads/2015/09/PSPunctuationWallChart_1_0_4.pdf
+
+# Find location where a command is found.
+(Get-Command {command-name}).Source
+# This seems to work more reliably than `where`.
+
+# Refresh environment variables after changes.
+refreshenv
