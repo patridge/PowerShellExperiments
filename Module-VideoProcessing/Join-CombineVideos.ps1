@@ -59,8 +59,6 @@ function Join-CombineVideos
 
         # # Dump current variables for debugging.
         # Get-Variable -Scope Local
-        # # TODO: Use `Write-Verbose` for extra debugging help.
-        # return
     }
     Process
     {

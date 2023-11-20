@@ -36,7 +36,6 @@ function Resize-TrimVideoEnds
 
         # Dump current variables for debugging.
         #Get-Variable -Scope Local
-        # TODO: Use `Write-Verbose` for extra debugging help.
     }
     Process
     {
