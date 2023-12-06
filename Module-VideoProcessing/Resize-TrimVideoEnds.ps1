@@ -6,10 +6,14 @@ function Resize-TrimVideoEnds
     Param(
         [Parameter(Mandatory=$true)]
         [string] $VideoPath,
-        [Parameter(Mandatory=$false)]
-        [string] $StartKeepTime,
-        [Parameter(Mandatory=$false)]
-        [string] $EndKeepTime,
+        [Parameter(
+            Mandatory=$false,
+            HelpMessage="Time to start trimming from the beginning of the video. If not provided, the new video will start at the beginning of the current video using a start time of 00:00:00.")]
+        [string] $StartKeepTime = "00:00:00",
+        [Parameter(
+            Mandatory=$false,
+            HelpMessage="Time to start trimming from the end of the video. If not provided, the entire video is kept by using an end time of 999,999,999 hours, which won't work if the video you are trimming is ridiculously long.")]
+        [string] $EndKeepTime = "999999999",
         [Parameter(
             Mandatory=$false,
             HelpMessage="Override path to FFmpeg install location. If not provided, the default Chocolatey install location is used."
