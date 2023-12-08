@@ -13,4 +13,4 @@ $vlcPath = "C:\Program Files\VideoLAN\VLC\vlc.exe"
 
 # This will show a separate VLC window for each download, but the `-I dummy` version seems to run hidden in the background where you can't control it.
 
-$urlsAndIndices | ForEach-Object { &$vlcPath "$($_.Url)" --sout "#transcode{vcodec=none,acodec=mp3,ab=128,channels=2,samplerate=44100,scodec=none}:file{dst=basics-$("{0:D2}" -f $_.Index)-andy.mp3,no-overwrite}" }
+$urlsAndIndices | ForEach-Object { &$vlcPath "$($_.Url)" --sout "#transcode{vcodec=none,acodec=mp3,ab=128,channels=2,samplerate=44100,scodec=none}:file{dst=$("{0:D2}" -f $_.Index).mp3,no-overwrite}" }
