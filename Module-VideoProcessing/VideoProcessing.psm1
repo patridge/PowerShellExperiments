@@ -4,6 +4,10 @@
 # New-Item -ItemType SymbolicLink -Path "${env:USERPROFILE}\Documents\PowerShell\Modules\VideoProcessing\Compress-ProcessForYouTubeUpload.ps1" -Target "C:\dev\PowerShellExperiments\Module-VideoProcessing\Compress-ProcessForYouTubeUpload.ps1" -Force
 # New-Item -ItemType SymbolicLink -Path "${env:USERPROFILE}\Documents\PowerShell\Modules\VideoProcessing\VideoProcessing.psm1" -Target "C:\dev\PowerShellExperiments\Module-VideoProcessing\VideoProcessing.psm1" -Force
 
+# New changes need to be reloaded, either by forced import or remove and re-import.
+# Remove-Module VideoProcessing
+# Import-Module VideoProcessing -Force
+
 . $PSScriptRoot\Join-CombineVideos.ps1
 . $PSScriptRoot\Resize-RemoveVideoSection.ps1
 . $PSScriptRoot\Resize-TrimVideoEnds.ps1
